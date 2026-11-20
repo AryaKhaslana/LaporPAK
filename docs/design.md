@@ -47,18 +47,18 @@ Kontras teks minimal 4.5:1. Teal `#0F766E` di atas putih 5.5:1. Pada tema gelap,
 
 Pin peta, badge, dan timeline memakai warna yang sama. Badge wajib memuat **ikon + label**, warna saja tidak cukup.
 
-| Status | Pin | Hex pin | Badge (Tailwind) | Ikon (Lucide) |
-| --- | --- | --- | --- | --- |
-| OPEN | Biru | `#2563EB` | `bg-blue-100 text-blue-800` | `circle-dot` |
-| OUT_OF_SCOPE | Abu-abu | `#9CA3AF` | `bg-gray-200 text-gray-700` | `ban` |
-| REJECTED_SPAM | Abu gelap (tersembunyi) | `#4B5563` | `bg-gray-700 text-gray-100` | `shield-x` |
-| IN_PROGRESS | Kuning | `#EAB308` | `bg-yellow-100 text-yellow-900` | `wrench` |
-| OVERDUE | Merah | `#DC2626` | `bg-red-100 text-red-800` | `alarm-clock` |
-| PENDING_VALIDATION | Oranye | `#F97316` | `bg-orange-100 text-orange-900` | `scale` |
-| DISPUTED | Ungu | `#9333EA` | `bg-purple-100 text-purple-800` | `message-square-warning` |
-| ESCALATED | Merah tua | `#7F1D1D` | `bg-red-900 text-red-50` | `siren` |
-| CLOSED | Hijau | `#16A34A` | `bg-green-100 text-green-800` | `check-circle-2` |
-| AUTO_CLOSED | Hijau muda | `#86EFAC` | `bg-green-50 text-green-800 ring-1 ring-green-300` | `clock-check` |
+| Status | Label UI (Anti-Jargon) | Pin | Hex pin | Badge (Tailwind) | Ikon (Lucide) |
+| --- | --- | --- | --- | --- | --- |
+| OPEN | Laporan Masuk | Biru | `#2563EB` | `bg-blue-100 text-blue-800` | `circle-dot` |
+| OUT_OF_SCOPE | Kewenangan Instansi Lain | Abu-abu | `#9CA3AF` | `bg-gray-200 text-gray-700` | `ban` |
+| REJECTED_SPAM | Ditolak (Spam) | Abu gelap (tersembunyi) | `#4B5563` | `bg-gray-700 text-gray-100` | `shield-x` |
+| IN_PROGRESS | Sedang Ditangani | Kuning | `#EAB308` | `bg-yellow-100 text-yellow-900` | `wrench` |
+| OVERDUE | Melewati Tenggat | Merah | `#DC2626` | `bg-red-100 text-red-800` | `alarm-clock` |
+| PENDING_VALIDATION | Menunggu Cek Warga | Oranye | `#F97316` | `bg-orange-100 text-orange-900` | `scale` |
+| DISPUTED | Dibantah Warga | Ungu | `#9333EA` | `bg-purple-100 text-purple-800` | `message-square-warning` |
+| ESCALATED | Eskalasi Pengawasan | Merah tua | `#7F1D1D` | `bg-red-900 text-red-50` | `siren` |
+| CLOSED | Tuntas Terverifikasi | Hijau | `#16A34A` | `bg-green-100 text-green-800` | `check-circle-2` |
+| AUTO_CLOSED | Ditutup Otomatis (72 Jam) | Hijau muda | `#86EFAC` | `bg-green-50 text-green-800 ring-1 ring-green-300` | `clock-check` |
 
 Di tema `slate`, badge memakai `bg-{warna}-500/15 text-{warna}-300`.
 
@@ -132,7 +132,7 @@ Tombol aksi yang memanggil API menampilkan spinner dan dinonaktifkan sampai resp
 - **Maskot panel:** Cak Pantau (kondisi normal/pantau) dan Mas Sigap (aksi/darurat), ilustrasi 96–160px di hero, empty state, dan toast besar. Pose "Siaga" dipakai untuk filter kosong dan error.
 
 ### 6.4 SlaTimer (Public SLA Countdown)
-- Format `HH:MM:SS` (`font-mono tabular-nums`), diperbarui tiap 1 detik. Jika >24 jam sisa, tampilkan `Xh Yj`.
+- Format `HH:MM:SS` (`font-mono tabular-nums`), diperbarui tiap 1 detik. Jika >24 jam sisa, tampilkan `X hari Y jam`.
 - Warna: >50% sisa `text-fg`, 25–50% `text-amber-700`, <25% `text-red-700`, OVERDUE `text-red-700 font-bold` + label `Terlambat +HH:MM`.
 - Paused (PENDING_VALIDATION): ikon `pause`, teks `SLA dijeda`, `text-fg-muted`.
 - Tier SLA tampil sebagai chip: `DARURAT · 24j` (merah), `MENENGAH · 72j` (amber), `STANDAR · 168j` (biru).
@@ -140,17 +140,20 @@ Tombol aksi yang memanggil API menampilkan spinner dan dinonaktifkan sampai resp
 ### 6.5 Peta (Leaflet)
 - Pin: lingkaran 32px berwarna status (tabel §3) dengan ikon putih di dalam. Pin dipilih: ring `brand` dan skala 1.15.
 - Klaster marker: `bg-brand text-brand-fg rounded-full`, ukuran naik per jumlah (36/44/52px).
-- Poligon geofencing `/lapor`: garis `#0F766E` putus-putus, isi `rgba(15,118,110,0.08)`. Di luar poligon, pin berubah merah dengan pesan `422`.
+- Poligon geofencing `/lapor`: garis `#0F766E` putus-putus, isi `rgba(15,118,110,0.08)`. Di luar poligon, pin berubah merah dengan pesan humanis *"Lokasi pin berada di luar wilayah layanan Surabaya & Sidoarjo"* (dilarang menampilkan kode `422`/`409`/`500` mentah ke warga).
+- Pra-kamera `/lapor`: setelah pin diletakkan, tampilkan daftar ringkas `nearbyTickets` dalam 50 m + 1 klik `Dukung Prioritas` **sebelum** kamera dibuka agar warga tidak memotret sia-sia saat kuota penuh.
 - Filter peta: chip kategori di atas peta, bisa digeser, `min-h-10`. Filter nihil menampilkan maskot Siaga + tombol `Reset Filter Peta`.
 - Loading: skeleton `animate-pulse` bentuk peta. Hormati `motion-reduce`.
 - Heatmap `/rapor`: gradien `#14B8A6 → #FACC15 → #DC2626` (MVP cukup klaster marker).
 
 ### 6.6 Kamera Live (WebRTC Viewfinder)
+- Pra-kamera `/lapor`: kartu ringkas di atas tombol buka kamera menjelaskan *kenapa* tidak bisa pilih dari galeri (*"Wajib foto langsung di lokasi agar terbukti kejadian nyata & baru"*) + jaminan privasi sebelum browser memicu prompt izin GPS/kamera.
+- Izin GPS/Kamera ditolak & GPS `>50m`: dilarang layar mati/kosong — tampilkan kartu panduan langkah demi langkah (*klik ikon gembok di bilah alamat → Izinkan → Muat Ulang Posisi*) atau saran menepi ke area terbuka + tombol `Coba Lagi`.
 - Layar penuh `fixed inset-0 bg-black`, video `object-cover`, bingkai pemandu sudut `border-white/80`.
 - Bar atas: tombol tutup (48px) dan chip akurasi GPS (`≤50m` hijau, `>50m` merah + teks).
 - Pengingat privasi permanen di bawah bingkai: `Jangan potret wajah atau pelat nomor` (`text-xs text-white/90 bg-black/50 rounded-full px-3`).
 - Tombol jepret: lingkaran `size-20 border-4 border-white bg-white/20`, di tengah bawah.
-- Hasil jepret: layar tinjau + tombol `Jepret Ulang` (secondary) dan `Kirim` (primary).
+- Hasil jepret: layar tinjau + tombol `Jepret Ulang` (secondary) dan `Kirim` (primary). Saat gagal jaringan/server, foto + ketikan form tetap tersimpan utuh dengan tombol `Kirim Ulang` (`Idempotency-Key` sama).
 - Pesan gagal kalibrasi, satu baris dengan ikon: `Terlalu silau`, `Terlalu gelap`, `Buram`, `Foto tidak pantas, jepret ulang` (zona 0.55–0.84). Jepret ke-3 buram: banner info `Foto kualitas rendah akan tetap dikirim`.
 - Blokir `≥0.85`: modal error dengan penalti -0.5 dan hitung mundur cooldown 24j.
 - Kamera virtual terdeteksi: modal danger. Sesi juri melihat tombol `Simulasi Jepret Kamera`.
@@ -159,20 +162,20 @@ Tombol aksi yang memanggil API menampilkan spinner dan dinonaktifkan sampai resp
 ### 6.7 Form Input
 - Label selalu terlihat di atas field (`text-sm font-medium mb-1`). Placeholder bukan pengganti label.
 - Input: `min-h-12 rounded-xl border border-line bg-surface px-4 text-base focus-visible:ring-2 ring-brand`. Padat (`/dinas`): `min-h-10 text-sm`.
-- Error di bawah field: `text-sm text-red-700` + ikon, `role="alert"`. Helper `text-xs text-fg-muted`.
+- Error di bawah field: `text-sm text-red-700` + ikon, `role="alert"`. Helper `text-xs text-fg-muted`. Isian form wajib bertahan saat error validasi atau putus koneksi.
 - Textarea alasan menampilkan penghitung `n/20` (Out of Scope), `n/15` (Tolak Spam, Oper). Tombol kirim aktif setelah syarat minimum terpenuhi.
 - Select instansi (Out of Scope): PLN, PDAM, BPJN, BBWS, Telkom, Lainnya.
-- Login `/login`: satu form, tombol Google OAuth di atas dengan pemisah `atau`. Tanpa tautan daftar untuk dinas.
+- Login `/login`: satu form, tombol Google OAuth di atas dengan pemisah `atau`, ditambah catatan jaminan anonimitas di bawahnya (`aliasName` acak, email/UUID tidak tampil ke publik/dinas). Tanpa tautan daftar untuk dinas.
 
 ### 6.8 Halaman Detail `/tiket/:id` (Uji Publik)
-- **BeforeAfterSlider:** dua foto, handle geser `size-12`, label `Sebelum` / `Sesudah`. Bisa dioperasikan keyboard (`←` `→`).
+- **BeforeAfterSlider:** dua foto, handle geser `size-12`, label `Sebelum` / `Sesudah`, dilengkapi info `repairDistanceMeters` & `repairCapturedAt` (misal `Diambil petugas 18 m dari titik laporan · 20 Nov 14:22 WIB`). Bisa dioperasikan keyboard (`←` `→`).
 - **QuorumBar:** `h-3 rounded-full bg-surface-2`, isi `bg-brand`, label `x / 2.0` + `n validator`. Penanda di 2.0.
-- **ValidationActions:** dua tombol 48px, `Sudah Beres` (primary) dan `Klaim Palsu` (danger outline). Nonaktif menampilkan jarak dan akurasi aktual, contoh `Jarak 240 m (maks 100 m) · Akurasi 12 m`.
-- **PhaseBanner:** jam 0–48 `bg-sky-50` (`Validasi warga sekitar ≤100 m`), jam 48–72 `bg-amber-50` (`Konfirmasi 1-tap pelapor`).
-- **Media NSFW pending:** foto `blur-xl` dengan tombol tengah `Tampilkan Gambar` (Signed URL 60 detik). **isLowQualityOverride:** foto normal + chip `Kualitas rendah` `bg-sky-100 text-sky-800`.
-- **Timeline status:** vertikal, titik berwarna status, waktu `font-mono`, label aktor anonim (`actorDisplayLabel`).
-- **HashPanel (`slate`):** `bg-[#0F172A] rounded-2xl p-4`, hash `font-mono text-xs break-all text-brand`, tombol `Verifikasi Rantai` (hasil: ikon hijau valid / merah rusak). Dapat dilipat di mobile.
-- `Dukung Prioritas`: tombol secondary dengan ikon, hitungan `supportCount`. Nonaktif untuk pelapor sendiri atau tiket di luar OPEN/IN_PROGRESS, dengan tooltip.
+- **ValidationActions:** dua tombol 48px, `Sudah Beres` (primary) dan `Klaim Palsu` (danger outline). Jika nonaktif (jarak >100 m, akurasi >50 m, atau `trustScore < 1.0` pada akun baru), alasan + cara menaikkan skor tampil sebagai teks terlihat di bawah tombol (jangan bergantung pada hover tooltip di HP).
+- **PhaseBanner:** jam 0–48 `bg-sky-50` (`Menunggu cek warga sekitar ≤100 m agar penilaian adil`), jam 48–72 `bg-amber-50` (`Konfirmasi 1-tap pelapor`).
+- **Media NSFW pending:** foto `blur-xl` dengan tombol tengah `Tampilkan Gambar` (Signed URL 60 detik). **isLowQualityOverride:** foto normal + chip `Foto buram (kualitas terbatas)` `bg-sky-100 text-sky-800`.
+- **Timeline status:** vertikal, titik berwarna status, waktu `font-mono`, label aktor anonim (`actorDisplayLabel`), serta alasan rujukan/penolakan jika `OUT_OF_SCOPE` / `REJECTED_SPAM`.
+- **HashPanel (`slate`):** `bg-[#0F172A] rounded-2xl p-4`, satu kalimat penjelasan awam *Segel Anti-Rekayasa* di atas hash (`"Membuktikan riwayat waktu & status tidak pernah diubah diam-diam"`), hash `font-mono text-xs break-all text-brand`, tombol `Verifikasi Rantai` (hasil: ringkasan `summaryText` + ikon hijau valid / merah rusak). Dapat dilipat di mobile.
+- `Dukung Prioritas`: tombol secondary dengan ikon, hitungan `supportCount`. Nonaktif untuk pelapor sendiri atau tiket di luar `Laporan Masuk` / `Sedang Ditangani`, dengan teks alasan singkat di bawahnya.
 
 ### 6.9 Tabel & Antrean `/dinas` (padat)
 - Desktop: tabel `text-sm`, header `sticky top-0 bg-surface-2`, baris `h-10 hover:bg-surface-2`, urutan OVERDUE dulu lalu SLA tersingkat. Baris OVERDUE: `border-l-4 border-red-600`.
@@ -189,7 +192,7 @@ Tombol aksi yang memanggil API menampilkan spinner dan dinonaktifkan sampai resp
 - **ProfileDrawer:** `fixed right-0 w-full sm:w-96`, isi: `aliasName` (contoh `Warga-Delta-402`), bar `trustScore 0–2.0` (warna merah <0.5, amber 0.5–1.0, hijau >1.0), status cooldown/freeze dengan hitung mundur, riwayat tiket, antrean offline.
 - **Antrean offline:** kartu `bg-amber-50` berisi `n foto tertunda`, sisa masa 24 jam, tombol `Sinkronkan Sekarang`.
 - **Dropzone Berita Acara:** `border-2 border-dashed rounded-2xl p-6`, terima PDF/JPG/PNG ≤5 MB, tampilkan nama file dan tombol hapus. Satu-satunya input `file` di aplikasi.
-- **Toast:** kanan atas desktop, atas tengah mobile, 5 detik. Toast 409 melakukan refresh data otomatis.
+- **Toast:** kanan atas desktop, atas tengah mobile, 5 detik. Konflik status/kuota (`409`) menampilkan pesan ramah bahasa awam (tanpa angka kode HTTP) lalu refresh data otomatis.
 
 ### 6.11 Panel Juri
 - Tombol melayang `bottom-20 right-4` (mobile) membuka panel 5 alat: `Role Switcher`, `GPS Simulator`, `Simulasi Jepret Kamera`, `Percepat Waktu (+25j/+49j)`, `Reset Demo`.
@@ -210,5 +213,5 @@ Tombol aksi yang memanggil API menampilkan spinner dan dinonaktifkan sampai resp
 - [ ] Status memakai tabel §3, lengkap dengan ikon dan label.
 - [ ] Target sentuh warga ≥48px, dinas ≥36px di `md+`.
 - [ ] Tampilan dicek di 375px, 768px, 1280px tanpa scroll horizontal.
-- [ ] Setiap state edge-case Bab 5 punya tampilan: kosong, lambat, error, terkunci, offline.
+- [ ] Setiap state edge-case Bab 5 punya tampilan: kosong, lambat, izin ditolak, error non-jargon, terkunci (alasan terlihat di HP), offline.
 - [ ] Fokus terlihat, tombol ikon punya `aria-label`, `motion-reduce` aktif.
